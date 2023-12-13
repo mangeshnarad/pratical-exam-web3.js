@@ -1,0 +1,74 @@
+1) Demonstrate how to use browser to interact with Smart Contract
+with the help of Web3.js. 
+
+ans=>
+
+step1=
+npm install web3
+
+step2=
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Contract Interaction</title>
+</head>
+<body>
+    <h1>Smart Contract Interaction</h1>
+    <script src="app.js"></script>
+</body>
+</html>
+
+step3=
+
+const Web3 = require('web3');
+const web3 = new Web3('https://mainnet.infura.io/v3/YOUR_INFURA_API_KEY');
+const contractABI = [
+  
+];
+const contractAddress = '0x123456789abcdef123456789abcdef123456789a';
+const contract = new web3.eth.Contract(contractABI, contractAddress);
+contract.methods
+    .yourReadOnlyFunction()
+    .call()
+    .then(result => {
+        console.log('Result of read-only function:', result);
+    })
+    .catch(error => {
+        console.error('Error calling read-only function:', error);
+    });
+
+
+const privateKey = 'YOUR_PRIVATE_KEY'; // Replace with your private key
+const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+
+const data = contract.methods.yourStateChangingFunction().encodeABI();
+
+const transactionObject = {
+    from: account.address,
+    to: contractAddress,
+    gas: 2000000,
+    data: data,
+};
+
+web3.eth.accounts.signTransaction(transactionObject, privateKey)
+    .then(signedTx => {
+        web3.eth.sendSignedTransaction(signedTx.rawTransaction)
+            .on('transactionHash', hash => {
+                console.log('Transaction Hash:', hash);
+            })
+            .on('confirmation', (confirmationNumber, receipt) => {
+                console.log('Confirmation Number:', confirmationNumber);
+                console.log('Receipt:', receipt);
+            })
+            .on('error', error => {
+                console.error('Transaction Error:', error);
+            });
+    })
+    .catch(error => {
+        console.error('Signing Error:', error);
+    });
+
+
